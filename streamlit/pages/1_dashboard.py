@@ -7,7 +7,7 @@ def load_data(url: str):
     df = pd.read_csv('/home/mangel/repositorios/repos/practica_ufv/streamlit/pages/video_games_sales.csv', sep=',')
     return df
 
-#prueba de que se carga bien el DF
+# Prueba de que se carga bien el DF
 df_merged = load_data('http://fastapi:8000/retrieve_data')
 print(df_merged)
 
@@ -34,8 +34,8 @@ col1.info(registros)
 col2.subheader('# Publishers')
 col2.info(adjudicatarios)
 
-col3.subheader('# Developers')
-col3.info(centro)
+col3.subheader('# Plataformas')
+col3.info(df_merged['Platform'].nunique())
 
 col4, col5, col6 = st.columns(3)
 col4.subheader('# Géneros')
@@ -44,34 +44,30 @@ col4.info(tipologia)
 col5.subheader('Ventas Medias Globales')
 col5.info(presupuesto_medio)
 
-col6.subheader('Critic Score Medio')
-col6.info(adjudicado_medio)
 
 # Tabs para gráficos
-tab1, tab2 = st.columns(2)
+tab1, tab2, tab3, tab4 = st.columns(4)
 
-# Distribución de Ventas Globales
+# Distribución de Ventas enAmerica
 with tab1:
-    st.subheader("Distribución de Ventas Globales")
-    fig1 = px.box(df_merged, y='Global_Sales', points="all")
+    st.subheader("Distribución de Ventas en America")
+    fig1 = px.box(df_merged, y='NA_Sales', points="all")
     st.plotly_chart(fig1, use_container_width=True)
 
-# Distribución de Critic Score
+# Distribución de Ventas en Europa
 with tab2:
-    st.subheader("Distribución de Critic Score")
-    fig2 = px.box(df_merged, y='Critic_Score', points="all")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.subheader("Distribución de Ventas en Europa")
+    fig1 = px.box(df_merged, y='EU_Sales', points="all")
+    st.plotly_chart(fig1, use_container_width=True)
 
-
-# Gráfico interactivo:
+# Gráfico interactivo: Ventas Globales vs Critic Score por Género
 with tab3:
-    st.subheader("Ventas Globales y Critic Score por Género")
-    fig3 = px.scatter(df_merged, x='Critic_Score', y='Global_Sales', color='Genre', marginal_y="violin", marginal_x="box", title='Ventas Globales vs Critic Score por Género')
+    st.subheader("Ventas America vs Europa")
+    fig3 = px.scatter(df_merged, x='NA_Sales', y='EU_Sales', color='Genre', marginal_y="violin", marginal_x="box", title='Ventas Globales vs Critic Score por Género')
     st.plotly_chart(fig3, use_container_width=True)
 
-# Gráfico interactivo:
+# Gráfico interactivo: User Score vs Ventas America por Plataforma
 with tab4:
-    st.subheader("User score y ventas globales
-    # Puedes modificar y personalizar este gráfico según tus necesidades
-    fig4 = px.scatter(df_merged, x='User_Score', y='Global_Sales', color='Platform', title='Ventas Globales vs User Score por Plataforma')
+    st.subheader("User Score vs Ventas de Europa por Plataforma")
+    fig4 = px.scatter(df_merged, x='Platform', y='EU_Sales', color='Platform', title='User Score vs Ventas Globales por Plataforma')
     st.plotly_chart(fig4, use_container_width=True)
