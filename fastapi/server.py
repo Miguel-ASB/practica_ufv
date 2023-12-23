@@ -12,45 +12,36 @@ class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-class Contrato(BaseModel):
-    #titulo:str
-    #autor:str
-    #pais:str
-    #genero:str
-    fecha:str
-    centro_seccion:str
-    nreg:str
-    nexp:str
-    objeto:str
-    tipo:str
-    procedimiento:str
-    numlicit:str
-    numinvitcurs:str
-    proc_adjud:str
-    presupuesto_con_iva:str
-    valor_estimado:str
-    importe_adj_con_iva:str
-    adjuducatario:str
-    fecha_formalizacion:str
-    I_G:str
+class VideoGame(BaseModel):
+    Platform: str
+    Year_of_Release: str
+    Genre: str
+    Publisher: str
+    NA_Sales: float
+    EU_Sales: float
+    JP_Sales: float
+    Other_Sales: float
+    Global_Sales: float
+    Critic_Score: float
+    Critic_Count: int
+    User_Score: float
+    User_Count: int
+    Developer: str
+    Rating: str
 
-
-class ListadoContratos(BaseModel):
-    contratos = List[Contrato]
+class ListadoVideoGames(BaseModel):
+    video_games: List[VideoGame]
 
 app = FastAPI(
     title="Servidor de datos",
-    description="""Servimos datos de contratos, pero podríamos hacer muchas otras cosas, la la la.""",
+    description="Servimos datos de videojuegos",
     version="0.1.0",
 )
 
-
 @app.get("/retrieve_data/")
-#def insercion_endpoint (titulo:str = Form(...), autor:str=Form(...), pais:str=Form(...),genero:str=File(...),  archivo: UploadFile=File(...)):
-def retrieve_data ():
-    todosmisdatos = pd.read_csv('./contratos_inscritos_simplificado_2023.csv',sep=';')
+def retrieve_data():
+    todosmisdatos = pd.read_csv('./video_games_sales.csv', sep=';')
     todosmisdatos = todosmisdatos.fillna(0)
     todosmisdatosdict = todosmisdatos.to_dict(orient='records')
-    listado = ListadoContratos()
-    listado.contratos = todosmisdatosdict
+    listado = ListadoVideoGames(video_games=todosmisdatosdict)
     return listado
