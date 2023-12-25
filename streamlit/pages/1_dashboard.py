@@ -1,11 +1,29 @@
 import pandas as pd
-import plotly.express as px
 import streamlit as st
+import plotly.express as px
+import os
+import matplotlib
+from matplotlib.backends.backend_agg import RendererAgg
+import requests
+import seaborn as sns
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @st.cache_data
 def load_data(url: str):
-    df = pd.read_csv('/home/mangel/repositorios/repos/practica_ufv/streamlit/pages/video_games_sales.csv', sep=',')
+    csv_path = os.path.join(BASE_DIR, 'video_games_sales.csv')
+    df = pd.read_csv(csv_path, sep=',')
+
+    # Verificar si las columnas necesarias existen en el DataFrame
+    required_columns = ['NA_Sales', 'EU_Sales', 'Genre', 'Platform']
+    for column in required_columns:
+        if column not in df.columns:
+            st.error(f"La columna '{column}' no se encuentra en el DataFrame.")
+            return None
+
     return df
+
 
 # Prueba de que se carga bien el DF
 df_merged = load_data('http://fastapi:8000/retrieve_data')
@@ -13,6 +31,7 @@ print(df_merged)
 
 # Verificación de carga de datos
 st.write("DataFrame Cargado:")
+st.write("Columnas en df_merged:", df_merged.columns)
 st.write(df_merged)
 
 # Información general
@@ -61,13 +80,31 @@ with tab2:
     st.plotly_chart(fig1, use_container_width=True)
 
 # Gráfico interactivo: Ventas Globales vs Critic Score por Género
+# Rellenar NaN con valores predeterminados
+df_filled = df_merged.fillna(0)  # Puedes cambiar 0 por el valor que desees
+
+# Gráfico interactivo: Ventas America vs Europa
 with tab3:
     st.subheader("Ventas America vs Europa")
-    fig3 = px.scatter(df_merged, x='NA_Sales', y='EU_Sales', color='Genre', marginal_y="violin", marginal_x="box", title='Ventas Globales vs Critic Score por Género')
-    st.plotly_chart(fig3, use_container_width=True)
+
+    # Comprobación de columnas antes de crear el gráfico en el DataFrame modificado
+    if 'NA_Sales' in df_filled.columns and 'EU_Sales' in df_filled.columns and 'Genre' in df_filled.columns:
+        fig3 = px.scatter(df_filled, x='NA_Sales', y='EU_Sales', color='Genre', marginal_y="violin", marginal_x="box", title='Ventas Globales vs Critic Score por Género')
+        st.plotly_chart(fig3, use_container_width=True)
+    else:
+        st.error("Alguna de las columnas necesarias no está presente en el DataFrame modificado.")
+
+# Gráfico interactivo: User Score vs Ventas America por Plataforma
+# Rellenar NaN con valores predeterminados
+df_filled_platform = df_merged.fillna({'Platform': 'Desconocido'})
 
 # Gráfico interactivo: User Score vs Ventas America por Plataforma
 with tab4:
     st.subheader("User Score vs Ventas de Europa por Plataforma")
-    fig4 = px.scatter(df_merged, x='Platform', y='EU_Sales', color='Platform', title='User Score vs Ventas Globales por Plataforma')
-    st.plotly_chart(fig4, use_container_width=True)
+
+    # Comprobación de columnas antes de crear el gráfico en el DataFrame modificado
+    if 'Platform' in df_filled_platform.columns and 'EU_Sales' in df_filled_platform.columns:
+        fig4 = px.scatter(df_filled_platform, x='Platform', y='EU_Sales', color='Platform', title='User Score vs Ventas Globales por Plataforma')
+        st.plotly_chart(fig4, use_container_width=True)
+    else:
+        st.error("Alguna de las columnas necesarias no está presente en el DataFrame modificado.")
