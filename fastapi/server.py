@@ -43,7 +43,7 @@ app = FastAPI(
 
 @app.get("/retrieve_data/")
 def retrieve_data():
-    todosmisdatos = pd.read_csv('./video_games_sales.csv', sep=';')
+    todosmisdatos = pd.read_csv('./video_games_sales.csv', sep=',')
     todosmisdatos = todosmisdatos.fillna(0)
     todosmisdatosdict = todosmisdatos.to_dict(orient='records')
     listado = ListadoVideoGames(video_games=todosmisdatosdict)
