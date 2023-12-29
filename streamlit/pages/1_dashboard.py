@@ -5,7 +5,7 @@ from matplotlib.backends.backend_agg import RendererAgg
 import requests
 import pandas as pd
 
-@st.cache.data
+@st.cache_data
 def load_data(url: str):
     r = requests.get(url)
     if r.status_code != 200:
