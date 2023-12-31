@@ -3,7 +3,10 @@ import plotly.express as px
 import matplotlib
 from matplotlib.backends.backend_agg import RendererAgg
 import requests
+import seaborn as sns
 import pandas as pd
+
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 @st.cache_data
 def load_data(url: str):
@@ -29,6 +32,12 @@ if df_sales is not None and not df_sales.empty:
     ventas_globales_medias = str(round(df_sales.Global_Sales.mean(), 2))
 
     # Configuración de estilo
+
+    def info_box(texto, color=None):
+        st.markdown(
+            f'<div style = "background-color:#4EBAE1;opacity:70%"><p style="text-align:center;color:white;font-size:30px;">{texto}</p></div>',
+            unsafe_allow_html=True)
+    lock = RendererAgg.lock
     matplotlib.use("agg")
     sns.set_palette("pastel")
 

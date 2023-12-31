@@ -25,7 +25,7 @@ class SALE_VideoGames(BaseModel):
     Global_Sales: float
 
 class Listado_Ventas_VG(BaseModel):
-    JuegosVideo: List[SALE_VideoGames]
+    JuegosVideo= List[SALE_VideoGames]
 
 app = FastAPI(
     title="Servidor de datos",
@@ -35,7 +35,7 @@ app = FastAPI(
 
 @app.get("/retrieve_data/")
 def retrieve_data():
-    todosmisdatos = pd.read_csv('/home/mangel/repositorios/repos/practica_ufv/streamlit/pages/vgsales.csv',sep=',')
+    todosmisdatos = pd.read_csv('./vgsales.csv', sep=',')
     todosmisdatos = todosmisdatos.fillna(0)
     todosmisdatosdict = todosmisdatos.to_dict(orient='records')
     listado = Listado_Ventas_VG()
